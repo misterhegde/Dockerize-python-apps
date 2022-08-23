@@ -1,0 +1,18 @@
+---
+
+version: '3'
+
+output: prefixed
+
+tasks:
+
+  run-app:
+    deps: [app-a, app-b]
+
+  app-a:
+    cmds:
+      - python apps/app_a/app_a.py
+
+  app-b:
+    cmds:
+      - python apps/app_b/app_b.py
