@@ -1,4 +1,4 @@
-# Density DevOps Homework Assignment
+# Taghive DevOps Homework Assignment
 
 ## Goal
 
