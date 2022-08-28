@@ -1,0 +1,16 @@
+version: '3'
+services:
+  app-a:
+    build:
+      context: apps/app_a
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4010:5000"
+  app-b:
+    build:
+      context: apps/app_b
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4011:5001"  
+
+
