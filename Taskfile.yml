@@ -16,3 +16,57 @@ tasks:
   app-b:
     cmds:
       - python apps/app_b/app_b.py
+
+  build-app-a:  #build AND scan app-a
+    cmds:
+      - docker build -t app-a-image apps/app_a
+      - snyk container test app-a-image --file=apps/app_a/Dockerfile
+
+
+  build-app-b:  #build AND scan app-b
+    cmds:
+      - docker build -t app-b-image apps/app_b
+      - snyk container test app-b-image --file=apps/app_b/Dockerfile
+
+
+  scan-app-a:
+    cmds:
+      # - docker scan app-a-image
+      - snyk container test app-a-image --file=apps/app_a/Dockerfile
+
+  
+  scan-app-b:
+    cmds:
+      # - docker scan app-b-image
+      - snyk container test app-b-image --file=apps/app_b/Dockerfile
+  
+  run-app-a:
+    cmds:
+      - docker run --security-opt=no-new-privileges --read-only -p 5000:5000 app-a-image
+
+  run-app-b:
+    cmds:
+      - docker run --security-opt=no-new-privileges --read-only -p 5001:5001 app-b-image
+
+  local-deploy:
+    cmds:
+      - kubectl apply -f k8s
+
+  launch:   #build both apps and deploy to local k8s cluster
+    cmds:
+      - docker build -t app-a-image apps/app_a
+      - docker build -t app-b-image apps/app_b
+      - task: local-deploy
+      - echo "Both apps built and deployed to local k8s"
+
+  destroy:
+    cmds:
+      - kubectl delete -f k8s
+      - echo "Both apps destroyed"
+
+  open:
+    cmds:
+      - bin/bash
+    
+
+      

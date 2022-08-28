@@ -2,6 +2,10 @@ from flask import Flask, request
 import sqlite3 as sql
 application = Flask(__name__)
 
+@application.route('/appb')
+def appb():
+    return 'Hello there from app B'
+
 
 @application.route('/auth', methods=['POST'])
 def auth():

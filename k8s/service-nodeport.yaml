@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nodeport
+spec:
+  type: NodePort
+  ports:
+  - port: 3050
+    name: app-a-nodeport
+    targetPort: 5000
+    nodePort: 31515
+  - port: 3051
+    name: app-bnodeport
+    targetPort: 5001
+    nodePort: 31517
+  selector:
+   component: app-pod

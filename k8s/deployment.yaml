@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: app-pod
+  template:
+    metadata:
+      labels:
+        component: app-pod
+    spec:
+      containers:
+        - name: app-a
+          image: app-a-image
+          imagePullPolicy: Never
+          # securityContext: 
+          #   # runAsNonRoot: true
+          #   # allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+        - name: app-b
+          image: app-b-image
+          imagePullPolicy: Never
+          # securityContext: 
+          #   # runAsNonRoot: true
+          #   # allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 5001
+          readinessProbe:
+            httpGet:
+              path: /appb
+              port: 5001
+            initialDelaySeconds: 15
+            periodSeconds: 30
