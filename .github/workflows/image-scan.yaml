@@ -1,0 +1,30 @@
+
+name: Scan Images
+on:
+  push:
+    branches: [ main ]
+jobs:
+  scan-docker-images:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the app-a Docker image
+      run: docker build -t app-a-image ./apps/app_a
+    - name: Build the app-b Docker image
+      run: docker build -t app-b-image ./apps/app_b
+    - name: Snyk Container app-a
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ Secrets.SNYK_TOKEN }}
+      with:
+        image: app-a-image
+        args: --file=Dockerfile
+    - name: Snyk Container app-b
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ Secrets.SNYK_TOKEN }}
+      with:
+        image: app-b-image
+        args: --file=Dockerfile
