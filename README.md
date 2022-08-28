@@ -1,68 +1,37 @@
-# Taghive DevOps Homework Assignment
+## Documentation
 
-## Goal
+Docker:
 
-This repo includes a very simple application which we want to dockerize and secure.  Security standards should be taken from the [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/index.html) and should pertain to Docker image security only.
+- For the base images, **`alpine`** has not been used to prevent compatibility issues. Since most python apps are built to work on Debian systems, they need recompilation to work on alpine. Therefore **`slim`** version of the image has been used.
+- Base image digest has been added to the Dockerfiles to ensure that everytime the images get built, the same underlying OS and library versions are used which provide a deterministic build.
+- A multi-stage build process for the Dockerfiles. A virtualenv (isolation inside of already isolated container) is created so that the app can use the required dependencies only, thereby also reducing the image sizes.
+- WSGI for production. [Gunicorn](https://docs.gunicorn.org/en/stable/index.html) is used.
+- The Docker applications are run with least privileges. A user named **`python`**, is created so that with this user the processes can run with least privileges. All the files copied will also be owned by the created user and not the default root user created by Docker.
+- A healthcheck is included in the Dockerfiles and also in the k8s deployment file to make sure the applications are working as expected.
+- The built Dockerfiles are scanned using [Snyk](https://snyk.io/) to scan vulnerabilities in the images.
 
-## Assignment
-
-Your task is to accomplish the following:
-
-- Dockerize the two included applications.
-- Apply OWASP image hardening best practices to both containers.
-- Set up automated local static image scans of the resulting images using a tool like [Snyk](https://snyk.io/).
-- Create a basic Kubernetes deployment for both applications.  The deployment should incorporate any OWASP guidance for running containers.
-- Ensure that all steps (build, scan, and local kubernetes deployment) can be easily performed using the included [task](https://github.com/go-task/task) file.
-
-## Don't Let the Dog Eat Your Homework
-
-For delivery of this assignment, we'd like to see:
-
-- Dockerfiles for both included applications with OWASP guidelines applied to the image.
-- A Task in the Taskfile that automates local static image scans of the resulting images.
-- A Kubernetes deployment file that deploys both apps using OWASP runtime guidelines.
-- All work orchestrated through the included Taskfile.yaml, documentation [here](https://taskfile.dev/#/)
-
-## Bonus Points for Any of the Following
-
-- Separate build and deploy stages in your Dockerfiles.
-- Automated local Kubernetes environment for testing.
-- Discuss how you would integrate regular scans into a CI pipeline, along with any caveats.
-- Discuss how you would expose and secure this application publicly on Kubernetes.
-
-Create a new repo using your Github account with a unique name and send us the final product!
+Kubernetes:
+- A single deployment file is created which launches 2 replicas and 2 containers (app-a and app-b) in each pod.
+- To connect to the containers, NodePort is being used. This single service file will communicate to the containers through localhost over seperate ports.
 
 
-## Notes
+Taskfile:
 
-- Please do not fork or submit a PR to this repo.
-- Please document your thought-processes and use well-written git commit messages to show your progress.
-- Feel free to change the python application and its requirements in any way you see fit.
-- We are purposefully not being overly prescriptive in this assignment, as we want you to think creatively about the solution.
-- This assignment should take less than 5 hours to complete.
-- If you get stuck or need more information, please reach out for clarity.
-- Have fun!
-
-## Getting Started in Local Development
-
-Please create and source your virtualenv before beginning. 
-
-Running the apps locally:
+To build and scan the apps seperately:
 
 ```bash
-task run-app
+task build-app-a
+task build-app-b
 ```
 
-Making a request
+To deploy the apps in local k8s cluster (docker desktop is used here):
 
 ```bash
-curl http://127.0.0.1:5000/hello
-
-curl -X POST -H 'Authorization: mytoken' http://127.0.0.1:5000/jobs
+task launch
 ```
 
-Simulating a lot of requests
+To destory the apps in the k8s cluster:
 
 ```bash
-ab -m POST -H "Authorization: mytoken" -n 500 -c 4 http://127.0.0.1:5000/jobs
+task destroy
 ```
