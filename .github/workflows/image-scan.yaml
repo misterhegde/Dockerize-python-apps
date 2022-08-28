@@ -19,7 +19,7 @@ jobs:
         SNYK_TOKEN: ${{ Secrets.SNYK_TOKEN }}
       with:
         image: app-a-image
-        args: --file=Dockerfile
+        args: --file=apps/app_a/Dockerfile
     - name: Snyk Container app-b
       continue-on-error: true
       uses: snyk/actions/docker@master
@@ -27,4 +27,4 @@ jobs:
         SNYK_TOKEN: ${{ Secrets.SNYK_TOKEN }}
       with:
         image: app-b-image
-        args: --file=Dockerfile
+        args: --file=apps/app_b/Dockerfile
